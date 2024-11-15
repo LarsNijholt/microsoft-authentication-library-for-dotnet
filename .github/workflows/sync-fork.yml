@@ -1,0 +1,28 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Runs at midnight UTC on the first day of each month
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Fork Repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.SYNC_PAT }}
+        persist-credentials: false
+
+    - name: Add Upstream Remote
+      run: |
+        git remote add upstream https://github.com/AzureAD/microsoft-authentication-library-for-dotnet.git
+        git fetch upstream
+
+    - name: Sync Fork with Upstream
+      run: |
+        git checkout main
+        git merge upstream/main --ff-only
+        git push origin main
