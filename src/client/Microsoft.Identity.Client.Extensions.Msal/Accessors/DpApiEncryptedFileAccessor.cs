@@ -54,7 +54,9 @@ namespace Microsoft.Identity.Client.Extensions.Msal
             if (data.Length != 0)
             {
                 _logger.LogInformation($"Protecting the data");
-                data = ProtectedData.Protect(data, optionalEntropy: null, scope: DataProtectionScope.CurrentUser);
+                // We change this line from the main repository because we require this to be local machine,
+                // so that the server can access the Token-Cache.
+                data = ProtectedData.Protect(data, optionalEntropy: null, scope: DataProtectionScope.LocalMachine);
             }
 
             _unencryptedFileAccessor.Write(data);
